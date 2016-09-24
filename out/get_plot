@@ -1,0 +1,38 @@
+#!/bin/sh
+
+# Delete old files.
+rm -f *.ps
+rm -f *.pdf
+rm -f plot
+
+# Prepare the plot script.
+echo "set terminal postscript enhanced color" > plot
+echo "set output 'threshold.ps'" >> plot
+echo "set size 0.7, 0.5" >> plot
+echo "set title \"Concatenated Torric Code Threshold\"" >> plot
+echo "set xlabel \"error rate per step (%)\"" >> plot
+echo "set ylabel \"failures (%)\"" >> plot
+echo "set xrange [-0.05:4.05]" >> plot
+echo "set yrange [-1:21]" >> plot
+echo "set key box" >> plot
+echo "set key top left" >> plot
+echo "set grid" >> plot
+
+plot_cmd="plot "
+line_type=0
+
+# Iterate for each lattice size.
+for file in *.txt
+do
+    line_type=`expr $line_type + 1` 
+    if [ $line_type -ne 1 ]; then
+        plot_cmd=$plot_cmd", "
+    fi
+    plot_cmd=$plot_cmd"\"$file\" using 1:(100-\$2) lw 3 linetype $line_type with lines title \"`echo $file | sed 's/results_\([0-99]*\).txt/XSize=\1/'`\""
+done
+
+
+echo $plot_cmd >> plot
+gnuplot plot
+
+ps2pdf threshold.ps

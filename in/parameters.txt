@@ -1,0 +1,7 @@
+XSize = 8 16 20
+iterations = 100000
+pMin = 0.02
+pMax = 0.03
+pStep = 0.001
+p_sqr_factor = 1.0
+p_oct_factor = 1.0
